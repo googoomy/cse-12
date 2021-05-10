@@ -30,14 +30,14 @@ li $t1 1			#$t1 will be the counter but also the numbers along the triangle
 la $t2 ($t0)			#$t2 is set to the user's inputted height of the triangle and will be the height loop counter
 li $t3 1			#$t3 is my subtraction variable when I want to subtract 1
 li $t6 1
-li $t7 1
-li $s0 1
+
 
 loopHeightTimes:
 beq $t6 $t2 exitHeightLoop	#exit height loop if height loop counter is zero
 
+li $t7 0
 loopPrintBeginningTabs:
-sub $t4 $t2 $t3		#Set $t4 equal to the value of $t2 minus one
+sub $t4 $t2 $t6		#Set $t4 equal to the value of $t2 minus one
 beq $t7 $t4 exitBeginningTabLoop	#Exit Loop if $t4 is zero
 li $v0 11			#prep to print tab
 la $a0 9			#put address of string into $a0
@@ -58,6 +58,7 @@ li $v0 11			#prep to print tab
 la $a0 9			#put address of string into $a0
 syscall			# print tab
 
+li $s0 1
 loopPrintAsterisks:
 sub $t5 $t1 $t3
 beq $s0 $t5 exitAsterisksLoop
@@ -85,6 +86,7 @@ la $a0 10		#put address of string into $a0
 syscall			#print newLine
 
 addi $t6 $t6 1
+	
 j loopHeightTimes
 
 exitHeightLoop:
