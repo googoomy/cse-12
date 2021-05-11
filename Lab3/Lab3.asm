@@ -1,3 +1,37 @@
+####################################################################################################################
+# Created by:	 Gu, James
+#	 jjgu
+#	 11 May, 2021
+#
+# Assignment:	 Lab 3: ASCII-risks (Asterisks)
+#	 CSE 12/12L, Computer systems and Assembly Language
+#	 UC Santa Cruz, Spring 2021
+#
+# Description: This program prints out a triangle made up of numbers, asterisks, and tabs with the height of
+#	 whatever number the user inputs.
+#
+# Notes: 	 This program is intended to be ran from MARS IDE.
+####################################################################################################################
+# My Pseudocode:
+# Step 1: Ask user for an integer greater than 0
+# Step 2: If that integer is not greater than 0 go back to Step 1. If that integer is greater than 0 go to Step 3.
+# Step 3: Set height to user's integer
+# Step 4: Set counter to 1
+# Step 5: Set randomVariable to height
+# Step 6: Do Step 7 to Step 17 height times:
+# Step 7: Print a tab randomVariable minus counter times
+# Step 8: Print counter
+# Step 9: if the counter is not 1 go to Step 13. If counter is 1 go to Step 9.
+# Step 10: print a tab.
+# Step 11: print an asterisk and a tab for counter minus 1 times
+# Step 12: add 1 to the counter
+# Step 13: print counter
+# Step 14: Go to next line
+# Step 15: add 1 to the counter
+# Step 16: Print counter
+# Step 17: subtract 1 from randomVariable
+
+
 .data
 
 enterHeightPrompt: .asciiz "Enter the height of the pattern (must be greater than 0):\t"
