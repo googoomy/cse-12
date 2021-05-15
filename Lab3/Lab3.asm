@@ -31,6 +31,16 @@
 # Step 16: Print counter
 # Step 17: subtract 1 from randomVariable
 
+#Register Usage:
+#$t0 - inputted height
+#$t1 - numbers along the triangle
+#$t2 - loop counter
+#$t3 - subtraction variable for when i want to minus 1
+#$t4 - part of the exit condition beginning tabs loop
+#$t5 - part of the exit condition for printing asterisks loop
+#$t6 - exit variable
+#$t7 - counter variable for beginning tabs loop
+#$s0 - counter variable for the printing asterisks loop
 
 .data
 
