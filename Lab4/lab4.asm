@@ -98,6 +98,9 @@ clear_bitmap: nop
 #*****************************************************
 draw_pixel: nop
 	# YOUR CODE HERE, only use t registers (and a, v where appropriate)
+	getCoordinates($a0 $t0 $t1)
+	getPixelAddress($t2 $t0 $t1)
+	sw $a1 ($t2)
 	jr $ra
 	
 #*****************************************************
@@ -111,6 +114,9 @@ draw_pixel: nop
 #*****************************************************
 get_pixel: nop
 	# YOUR CODE HERE, only use t registers (and a, v where appropriate)
+	getCoordinates($a0 $t0 $t1)
+	getPixelAddress($t2 $t0 $t1)
+	lw $v0 ($t2)
 	jr $ra
 
 #*****************************************************
