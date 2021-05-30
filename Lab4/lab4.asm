@@ -140,6 +140,17 @@ get_pixel: nop
 #*****************************************************
 draw_horizontal_line: nop
 	# YOUR CODE HERE, only use t registers (and a, v where appropriate)
+	li $t4 128
+	li $t5 0
+	getPixelAddress($t3 $t5 $a0)
+	loop1:
+	beq $t5 $t4 exit1
+	sw $a1 ($t3)
+	addi $t3 $t3 4
+	addi $t5 $t5 1
+	j loop1
+	
+	exit1:
  	jr $ra
 
 
@@ -154,6 +165,17 @@ draw_horizontal_line: nop
 #*****************************************************
 draw_vertical_line: nop
 	# YOUR CODE HERE, only use t registers (and a, v where appropriate)
+	li $t4 128
+	li $t5 0
+	getPixelAddress($t3 $a0 $t5)
+	loop2:
+	beq $t5 $t4 exit2
+	sw $a1 ($t3)
+	addi $t3 $t3 512
+	addi $t5 $t5 1
+	j loop2
+	
+	exit2:
  	jr $ra
 
 
