@@ -203,9 +203,17 @@ draw_crosshair: nop
 	# may be overwritten.  
 	
 	# YOUR CODE HERE, only use t0-t7 registers (and a, v where appropriate)
-
-	
-
+	push($a0)
+	getCoordinates($a0 $t6 $t7)
+	jal get_pixel
+	move $a0 $t7
+	jal draw_horizontal_line
+	move $a0 $t6
+	jal draw_vertical_line
+	pop($a0)
+	move $a1 $v0
+	jal draw_pixel
+	pop($ra)
 	# HINT: at this point, $ra has changed (and you're likely stuck in an infinite loop). 
 	# Add a pop before the below jump return (and push somewhere above) to fix this.
 	jr $ra
