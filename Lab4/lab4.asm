@@ -84,8 +84,18 @@ syscall
 #*****************************************************
 clear_bitmap: nop
 	# YOUR CODE HERE, only use t registers (and a, v where appropriate)
- 	jr $ra
-
+	li $t3 4294901760
+	li $t4 16384
+	li $t5 0
+	loop:
+	beq $t5 $t4 exit
+	sw $a0 ($t3)
+	addi $t3 $t3 4
+	addi $t5 $t5 1
+	j loop
+	exit:
+	jr $ra
+	
 #*****************************************************
 # draw_pixel: Given a coordinate in $a0, sets corresponding 
 #	value in memory to the color given by $a1
