@@ -1,4 +1,28 @@
-# Spring 2021 CSE12 Lab 4 Template
+###########################################################################################################
+#Created:     Gu, James
+#             jjgu 
+#             29 May 2021
+#
+#Assignment:  Lab 4: Functions and Graphics
+#             CSE 12/12L, Computer Systems and Assembly Language
+#             UC Santa Cruz, Spring 2021
+#
+#Description: This program prints a graphic consisting of two pixels, two lines (one horizontal 
+#             and one vertical), and a crosshair. Go to tools and then Bitmap Display to view.
+#
+#Notes:       This program is intended to be run from the MARS IDE
+###########################################################################################################
+#REGISTER USAGE:
+#$t0: used for 0x000000XX
+#$t1: used for 0x000000YY
+#$t2: stores memory address based on 0x000000XX and 0x000000YY
+#$t3: stores memory address
+#$t4: loop ender variable
+#$t5: loop counter
+#$t6: used for 0x000000XX for crosshair
+#$t7: used for 0x000000YY for crosshair
+
+# Spring 2021 CSE12 Lab 4
 ######################################################
 # Macros made for you (you will need to use these)
 ######################################################
@@ -29,22 +53,23 @@
 #	%y: register to store 0x000000YY in
 .macro getCoordinates(%input %x %y)
 	# YOUR CODE HERE
-	sra %x %input 16
-	sll %y %input 16
-	sra %y %y 16
+	sra %x %input 16                             #set %x to shifted right arithmetic %input 16 times 
+	                                             #(0x00XX00YY->0x000000XX)
+	sll %y %input 16                             #set %y to shifted left logical %input 16 times (0x00XX00YY->0x00YY0000)
+	sra %y %y 16                                 #set %y to shifted right arithmetic %y 16 times (0x00YY0000->0x000000YY)
 .end_macro
 
 # Macro that takes Coordinates in (%x,%y) where
 #	%x = 0x000000XX and %y= 0x000000YY and
 #	returns %output = (0x00XX00YY)
-# args: 
+# args:
 #	%x: register containing 0x000000XX
 #	%y: register containing 0x000000YY
 #	%output: register to store 0x00XX00YY in
-.macro formatCoordinates(%output %x %y)
-	# YOUR CODE HERE
-	sll %output %x 16
-	add %output %output %y
+.macro formatCoordinates(%output %x %y)                          
+	# YOUR CODE HERE                                 
+	sll %output %x 16                            #set %output to shifted left logical %x 16 times(0x000000XX->0x00XX0000)
+	add %output %output %y                       #set %output to the sum of %output and %y (0x00XX0000->0x00XX00YY)
 .end_macro 
 
 # Macro that converts pixel coordinate to address
@@ -58,10 +83,11 @@
 #	%output: register to store memory address in
 .macro getPixelAddress(%output %x %y)
 	# YOUR CODE HERE
-	sll %output %y 7
-	add %output %output %x
-	sll %output %output 2
-	addi %output %output 4294901760
+	sll %output %y 7                             #set %output to shifted left logical %y 7 times (multiply y by 128)     
+	add %output %output %x                       #set %output to the sum of %output and %x
+	sll %output %output 2                        #set %output to shifted left logical %output 2 times (multiply 
+	                                             #current output by 4)
+	addi %output %output 4294901760              #add the origin to the current output (0xFFFF0000+current output)
 .end_macro
 
 
@@ -84,17 +110,18 @@ syscall
 #*****************************************************
 clear_bitmap: nop
 	# YOUR CODE HERE, only use t registers (and a, v where appropriate)
-	li $t3 4294901760
-	li $t4 16384
-	li $t5 0
-	loop:
-	beq $t5 $t4 exit
-	sw $a0 ($t3)
-	addi $t3 $t3 4
-	addi $t5 $t5 1
-	j loop
+	li $t3 4294901760                            #set the $t3 register to 0xFFFF0000 (memory vlaue starts at origin)
+	li $t4 16384                                 #set the $t4 register to 16384. if $t5 becomes equal to $t4 
+	                                             #the loop ends
+	li $t5 0                                     #set the $t5 register to 0. $t5 will be the counter
+	colorBackgroundLoop:
+		beq $t5 $t4 exit               #exit for loop if $t5 and $t4 are equal
+		sw $a0 ($t3)                   #store the $a0 into the corresponding value in memory (color the pixel)
+		addi $t3 $t3 4                 #add 4 to memory value in $t3
+		addi $t5 $t5 1                 #add 1 to the counter $t5
+		j colorBackgroundLoop          #jump back to the top of the loop
 	exit:
-	jr $ra
+		jr $ra                         #return to where the function was called
 	
 #*****************************************************
 # draw_pixel: Given a coordinate in $a0, sets corresponding 
@@ -108,10 +135,10 @@ clear_bitmap: nop
 #*****************************************************
 draw_pixel: nop
 	# YOUR CODE HERE, only use t registers (and a, v where appropriate)
-	getCoordinates($a0 $t0 $t1)
-	getPixelAddress($t2 $t0 $t1)
-	sw $a1 ($t2)
-	jr $ra
+	getCoordinates($a0 $t0 $t1)                  #set $t0 and $t1 to 0x000000XX and 0x000000YY based on $a0
+	getPixelAddress($t2 $t0 $t1)                 #set $t2 to the memory address based on $t0 and $t1
+	sw $a1 ($t2)                                 #store the $a1 into the corresponding value in memory (color the pixel)
+	jr $ra                                       #return to where the function was called
 	
 #*****************************************************
 # get_pixel:
@@ -124,10 +151,10 @@ draw_pixel: nop
 #*****************************************************
 get_pixel: nop
 	# YOUR CODE HERE, only use t registers (and a, v where appropriate)
-	getCoordinates($a0 $t0 $t1)
-	getPixelAddress($t2 $t0 $t1)
-	lw $v0 ($t2)
-	jr $ra
+	getCoordinates($a0 $t0 $t1)                  #set $t0 and $t1 to 0x000000XX and 0x000000YY based on $a0
+	getPixelAddress($t2 $t0 $t1)                 #set $t2 to the memory address based on $t0 and $t1
+	lw $v0 ($t2)                                 #load the contents of the corresponding value in memory into $v0
+	jr $ra                                       #return to where the function was called
 
 #*****************************************************
 # draw_horizontal_line: Draws a horizontal line
@@ -140,18 +167,17 @@ get_pixel: nop
 #*****************************************************
 draw_horizontal_line: nop
 	# YOUR CODE HERE, only use t registers (and a, v where appropriate)
-	li $t4 128
-	li $t5 0
-	getPixelAddress($t3 $t5 $a0)
-	loop1:
-	beq $t5 $t4 exit1
-	sw $a1 ($t3)
-	addi $t3 $t3 4
-	addi $t5 $t5 1
-	j loop1
-	
+	li $t4 128                                   #set $t4 to 128. when $t4 and $t5 are equal end the loop
+	li $t5 0                                     #set $t5 to 0. $t5 will be the counter for the loop
+	getPixelAddress($t3 $t5 $a0)                 #set $t3 to the memory address based on 0x00000000 and 0x000000YY
+	drawHorizontalLineLoop:
+		beq $t5 $t4 exit1              #exit loop if $t4 and $t5 are equal
+		sw $a1 ($t3)                   #store the $a1 into the corresponding value in memory (color the pixel)
+		addi $t3 $t3 4                 #add 4 to memory value in $t3
+		addi $t5 $t5 1                 #add 1 to the counter $t5
+		j drawHorizontalLineLoop       #jump back to the top of the loop
 	exit1:
- 	jr $ra
+ 		jr $ra                         #return to where the function was called
 
 
 #*****************************************************
@@ -165,18 +191,17 @@ draw_horizontal_line: nop
 #*****************************************************
 draw_vertical_line: nop
 	# YOUR CODE HERE, only use t registers (and a, v where appropriate)
-	li $t4 128
-	li $t5 0
-	getPixelAddress($t3 $a0 $t5)
-	loop2:
-	beq $t5 $t4 exit2
-	sw $a1 ($t3)
-	addi $t3 $t3 512
-	addi $t5 $t5 1
-	j loop2
-	
+	li $t4 128                                   #set $t4 to 128. when $t4 and $t5 are equal end the loop
+	li $t5 0                                     #set $t5 to 0. $t5 will be the counter for the loop
+	getPixelAddress($t3 $a0 $t5)                 #set $t3 to the memory address based on 0x000000XX and 0x00000000
+	drawVerticleLineLoop:
+		beq $t5 $t4 exit2              #exit loop if $t4 and $t5 are equal
+		sw $a1 ($t3)                   #store the $a1 into the corresponding value in memory (color the pixel)
+		addi $t3 $t3 512               #add 512 to memory value in $t3 (go to next row same x)
+		addi $t5 $t5 1                 #add 1 to the counter $t5
+		j drawVerticleLineLoop         #jump back to the top of the loop
 	exit2:
- 	jr $ra
+ 		jr $ra                         #return to where the function was called
 
 
 #*****************************************************
@@ -203,17 +228,17 @@ draw_crosshair: nop
 	# may be overwritten.  
 	
 	# YOUR CODE HERE, only use t0-t7 registers (and a, v where appropriate)
-	push($a0)
-	getCoordinates($a0 $t6 $t7)
-	jal get_pixel
-	move $a0 $t7
-	jal draw_horizontal_line
-	move $a0 $t6
-	jal draw_vertical_line
-	pop($a0)
-	move $a1 $v0
-	jal draw_pixel
-	pop($ra)
+	push($a0)                                    #push $a0 to the top of the stack
+	getCoordinates($a0 $t6 $t7)                  #set $t6 and $t7 to 0x000000XX and 0x000000YY based on $a0
+	jal get_pixel                                #jump to the function get_pixel to store the color of the pixel into $v0
+	move $a0 $t7                                 #set $a0 to the value of $t7
+	jal draw_horizontal_line                     #jump to the function draw_horizontal_line (draw horizontal line)
+	move $a0 $t6                                 #set $a0 to the value of $t6
+	jal draw_vertical_line                       #jump to the function draw_vertical_line (draw vertical line)
+	pop($a0)                                     #pop $a0 out of the top of the stack
+	move $a1 $v0                                 #set $a0 to the value of $v0
+	jal draw_pixel                               #jump to the function draw_pixel (draw original color pixel)
+	pop($ra)                                     #pop $ra out of the top of the stack
 	# HINT: at this point, $ra has changed (and you're likely stuck in an infinite loop). 
 	# Add a pop before the below jump return (and push somewhere above) to fix this.
-	jr $ra
+	jr $ra                                       #return to where the function was called
